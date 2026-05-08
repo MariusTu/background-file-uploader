@@ -1,0 +1,42 @@
+name: .NET Core Desktop Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    env:
+      Solution_Name: BackgroundFileUploader.slnx
+      Project_Path: BackgroundFileUploader/BackgroundFileUploader.csproj
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Install .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 10.0.x
+
+    - name: Restore Dependencies
+      run: dotnet restore ${{ env.Solution_Name }}
+
+    - name: Build Project
+      run: dotnet build ${{ env.Solution_Name }} --configuration Release --no-restore
+
+    - name: Publish Windows Executable
+      run: dotnet publish ${{ env.Project_Path }} -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o ./publish
+
+    - name: Upload Build Artifacts
+      if: success()
+      uses: actions/upload-artifact@v4
+      with:
+        name: Windows-Desktop-App
+        path: ./publish/*.exe
