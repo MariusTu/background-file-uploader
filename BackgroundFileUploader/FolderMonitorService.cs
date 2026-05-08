@@ -7,9 +7,9 @@ namespace BackgroundFileUploader;
 public class FolderMonitorService
 {
     private FileSystemWatcher? _watcher;
-    private readonly AppSettings _settings;
+    private AppSettings _settings;
 
-    private readonly UploadService _uploadService;
+    private UploadService _uploadService;
 
     // Inject your white-label settings into the service
     public FolderMonitorService(AppSettings settings)
@@ -61,6 +61,21 @@ public class FolderMonitorService
         await Task.Delay(500);
 
         ProcessFile(e.FullPath);
+    }
+
+public void RestartWithNewSettings(AppSettings newSettings)
+    {
+        // 1. Stop the current watcher
+        Stop(); 
+        
+        // 2. Update the internal settings reference
+        _settings = newSettings;
+        
+        // 3. FORCE the UploadService to rebuild with the new API URL and Secret Key
+        _uploadService = new UploadService(_settings); 
+        
+        // 4. Start monitoring the new folder
+        Start();
     }
 
     private async void ProcessFile(string filePath)

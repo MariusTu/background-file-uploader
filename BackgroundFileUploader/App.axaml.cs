@@ -10,7 +10,8 @@ namespace BackgroundFileUploader;
 
 public partial class App : Application
 {
-    private FolderMonitorService? _monitorService;
+    public FolderMonitorService? MonitorService { get; private set; }
+    private SettingsWindow? _settingsWindow;
 
     public override void Initialize()
     {
@@ -35,10 +36,10 @@ public partial class App : Application
             // --------------------------------
 
             // Start the Folder Monitor
-            _monitorService = new FolderMonitorService(settings);
+            MonitorService = new FolderMonitorService(settings);
             
             // If it fails to start (e.g., empty folder), shut down gracefully
-            if (!_monitorService.Start())
+            if (!MonitorService.Start())
             {
                 Console.WriteLine("Exiting application.");
                 desktop.Shutdown();
@@ -74,13 +75,42 @@ public partial class App : Application
         return defaultSettings;
     }
 
+    public void Settings_Clicked(object? sender, EventArgs e)
+    {
+        // Prevent opening multiple settings windows at once
+        if (_settingsWindow == null || !_settingsWindow.IsVisible)
+        {
+            _settingsWindow = new SettingsWindow();
+            _settingsWindow.Show();
+        }
+        else
+        {
+            // If it's already open, just bring it to the front
+            _settingsWindow.Activate();
+        }
+    }
+
     // Handle Tray Icon Exit Click
     public void Exit_Clicked(object? sender, EventArgs e)
     {
-        _monitorService?.Stop();
+        MonitorService?.Stop();
+        
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             desktop.Shutdown();
         }
+    }
+
+    public void ApplyLiveSettings(AppSettings newSettings)
+    {
+        // 1. Instantly update the Tray Icon ToolTip
+        var trayIcons = TrayIcon.GetIcons(this);
+        if (trayIcons != null && trayIcons.Count > 0)
+        {
+            trayIcons[0].ToolTipText = newSettings.BrandingName;
+        }
+
+        // 2. Instantly restart the folder monitor
+        MonitorService?.RestartWithNewSettings(newSettings);
     }
 }

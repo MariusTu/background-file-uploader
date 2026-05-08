@@ -13,6 +13,8 @@
             <TrayIcon Icon="/Assets/icon.ico" ToolTipText="Background File Uploader">
                 <TrayIcon.Menu>
                     <NativeMenu>
+                        <NativeMenuItem Header="Settings..." Click="Settings_Clicked" />
+                        <NativeMenuItemSeparator />
                         <NativeMenuItem Header="Exit" Click="Exit_Clicked" />
                     </NativeMenu>
                 </TrayIcon.Menu>

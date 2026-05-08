@@ -1,0 +1,43 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="BackgroundFileUploader.SettingsWindow"
+        Title="Uploader Settings"
+        Width="450" 
+        SizeToContent="Height"
+        WindowStartupLocation="CenterScreen"
+        CanResize="False">
+
+ <StackPanel Margin="20" Spacing="15">
+        <TextBlock Text="App Configuration" FontSize="20" FontWeight="Bold" />
+
+        <!-- Branding Name -->
+        <TextBlock Text="Branding Name:" FontWeight="SemiBold" />
+        <TextBox x:Name="BrandingTextBox" PlaceholderText="e.g. Corpnet Secure Uploader" />
+
+        <!-- Monitoring Folder -->
+        <TextBlock Text="Folder to Monitor:" FontWeight="SemiBold" />
+        <Grid ColumnDefinitions="*, Auto">
+            <TextBox Grid.Column="0" x:Name="FolderTextBox" IsReadOnly="True" PlaceholderText="Select a folder..." Margin="0,0,10,0"/>
+            <Button Grid.Column="1" Content="Browse..." Click="Browse_Clicked" />
+        </Grid>
+
+        <!-- API URL -->
+        <TextBlock Text="Server API URL:" FontWeight="SemiBold" />
+        <TextBox x:Name="ApiUrlTextBox" PlaceholderText="https://yourserver.com/api/upload" />
+
+        <!-- API Secret Key -->
+        <TextBlock Text="API Secret Key:" FontWeight="SemiBold" />
+        <TextBox x:Name="ApiKeyTextBox" PasswordChar="*" PlaceholderText="Enter secure key" />
+
+        <!-- Save Button & Status -->
+        <Button Content="Save Configuration" 
+                HorizontalAlignment="Stretch" 
+                HorizontalContentAlignment="Center" 
+                Background="#0ea5e9" 
+                Foreground="White"
+                Margin="0,15,0,0"
+                Click="Save_Clicked"/>
+                
+        <TextBlock x:Name="StatusTextBlock" Foreground="Green" TextAlignment="Center" FontWeight="Bold" />
+    </StackPanel>
+</Window>
